@@ -8,7 +8,7 @@ According to Hortonworks Hadoop is a:
 In other words Hadoop is used to handle Big Data when vertical scaling is insufficient to meet the client
 needs to store and process data.
 
-Why is vertical scaling not always an option? Hmm, probably upgrading your server's hardware has at some point no one to one relation with its performance. 
+Why is vertical scaling not always an option? Hmm, probably upgrading your server's hardware has at some point no one to one relation to its performance upgrade. 
 Eventually storing loads of data will increase disk seek times and thus also processing time. 
   
 To better comprehend the need of horizontal scaling, distributed programming and thus technologies as Hadoop we should clarify the buzzword  **Big Data**!
@@ -51,7 +51,43 @@ You can transform the data in parallel in an efficient way by using mappers, whe
 Besides MapReduce Hadoop’s ecosystem contains a lot of applications that run on or alongside HDFS and Yarn. 
 Think about Spark (better alternative of MapReduce), Pig, HBASE, Kafka, Tez, Hive, Flume, Kafka, ...
 
-![alt text](https://github.com/msnm/DiscoveringBigData/raw/master/hadoop/notes/img/hadoopsecosystem.png "HadoopsEcosystem")
+![alt text](https://github.com/msnm/DiscoveringBigData/raw/master/hadoop/notes/img/hadoopsecosystem.png "HadoopsEcosystem") 
+Picture is taken from the Udemy course [https://www.udemy.com/the-ultimate-hands-on-hadoop-tame-your-big-data]
+
+## Hadoop's File System (HDFS)
+
+Hadoop is not made for handling tons of files of just several mb, but it is made to store very large files that can be 
+split up into chunks of 120mb. These blocks are persisted on different nodes and more than one copy is stored so that 
+if one node goes down your data is not lost (failover). It is the Name Node (a virtual directory structure) that keeps 
+track where your blocks of data live. This Name Node has a ledger called the edit log that maintains a record of 
+what’s being created, modified and stored. 
+
+Let’s say you want to read a file from the HDFS, you (Client Node/App) will first talk to the Name Node, which will look 
+into its ledger which Data Nodes you should access to retrieve your data in the most efficient manner. 
+Then you will retrieve the data blocks from the given Data Nodes (one and three in the figure). 
+
+![alt text](https://github.com/msnm/DiscoveringBigData/raw/master/hadoop/notes/img/read_write_hfds.png "Left: reading from HDFS, Right: writing to HDFS") 
+
+
+
+To store a file on HDFS your client will first talk to the Name Node which will make an entry into its ledger for 
+this new file. Then you talk to a single Data Node to store your file and this Data Node will talk to its peer Data Nodes 
+to store your data in blocks in a replicated manner. Each Data Node sends an acknowledgment down the road back to the client. 
+Ultimately the client talks to the Name Node again which stores the info of where each data block is stored into the entry 
+created for this file in its ledger. 
+
+So far, our data is stored in a distributed and replicated manner, but what happens if our Name Node crashes? 
+To eliminate this single point of failure several options can be used depending on your business requirements: 
+1)	Copy the ledger constantly (edit logs) to an NFS backup. If your node crashes, you create a new Name Node and 
+    initialise it with the edit logs stored on the NFS. This option comes with downtime and if there is some network I/O lag you might lose some data. 
+2)	Create a non-active secondary Name Node that constantly merges the edit log of the active Name Node. 
+    This is not an automatic failover mechanism, but this should reduce the loss of data.
+3)	Store the edit log on a non HDFS like NFS where both the active and passive Name Nodes have access to the shared 
+    edit log. When the master crashes the slave takes over and no data is lost. It is Zookeeper that handles the failover mechanism. 
+    This setup is more complicated, and the possibility exist that two Name Nodes are active if the setup is configured badly.
+
+Accessing the HDFS (talking to the Name Node) can be done using a UI, CLI, HTTP/ HFDS Proxies, Java interface and you can even mount your HDFS like NFS Gateway. 
+
 
 
 
