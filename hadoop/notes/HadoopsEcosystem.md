@@ -99,6 +99,7 @@ Most of the Hadoop's file system commands look similar to the Linux commands. In
 
 More to come here ...  
 
+
 ## Yarn
 
 Yarn is a distributed OS and its purpose is to allocate resources so that applications can parallelize their tasks on different nodes. 
