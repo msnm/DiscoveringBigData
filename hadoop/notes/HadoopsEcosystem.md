@@ -52,29 +52,31 @@ Besides MapReduce Hadoop’s ecosystem contains a lot of applications that run o
 Think about Spark (better alternative of MapReduce), Pig, HBASE, Kafka, Tez, Hive, Flume, Kafka, ...
 
 ![alt text](https://github.com/msnm/DiscoveringBigData/raw/master/hadoop/notes/img/hadoopsecosystem.png "HadoopsEcosystem") 
-Picture is taken from the Udemy course [https://www.udemy.com/the-ultimate-hands-on-hadoop-tame-your-big-data]
+Picture is taken from the Udemy [course](https://www.udemy.com/the-ultimate-hands-on-hadoop-tame-your-big-data)
 
 ## Hadoop's File System (HDFS)
 
-Hadoop is not made for handling tons of files of just several mb, but it is made to store very large files that can be 
-split up into chunks of 120mb. These blocks are persisted on different nodes and more than one copy is stored so that 
+HDFS is a distributed file system that is not made for handling tons of files of just several mb, 
+but it is designed to store very large files that can be 
+partitioned into chunks of 120mb. Each of these blocks will be persisted on different nodes and more than one copy is stored so that 
 if one node goes down your data is not lost (failover). It is the Name Node (a virtual directory structure) that keeps 
 track where your blocks of data live. This Name Node has a ledger called the edit log that maintains a record of 
 what’s being created, modified and stored. 
 
 Let’s say you want to read a file from the HDFS, you (Client Node/App) will first talk to the Name Node, which will look 
 into its ledger which Data Nodes you should access to retrieve your data in the most efficient manner. 
-Then you will retrieve the data blocks from the given Data Nodes (one and three in the figure). 
+Then you will retrieve the data blocks from the given Data Nodes (one and three in left the figure). 
 
 ![alt text](https://github.com/msnm/DiscoveringBigData/raw/master/hadoop/notes/img/read_write_hfds.png "Left: reading from HDFS, Right: writing to HDFS") 
-
-
 
 To store a file on HDFS your client will first talk to the Name Node which will make an entry into its ledger for 
 this new file. Then you talk to a single Data Node to store your file and this Data Node will talk to its peer Data Nodes 
 to store your data in blocks in a replicated manner. Each Data Node sends an acknowledgment down the road back to the client. 
 Ultimately the client talks to the Name Node again which stores the info of where each data block is stored into the entry 
 created for this file in its ledger. 
+
+HDFS is designed to *write-once and read many times*, meaning that it is not intended for OLTP but rather for OLAP. As we will discover later the applications
+that run on top of HDFS and YARN main purposes are to analyse the data stored on a HFDS and not to alter/update the data. 
 
 So far, our data is stored in a distributed and replicated manner, but what happens if our Name Node crashes? 
 To eliminate this single point of failure several options can be used depending on your business requirements: 
@@ -86,8 +88,50 @@ To eliminate this single point of failure several options can be used depending 
     edit log. When the master crashes the slave takes over and no data is lost. It is Zookeeper that handles the failover mechanism. 
     This setup is more complicated, and the possibility exist that two Name Nodes are active if the setup is configured badly.
 
-Accessing the HDFS (talking to the Name Node) can be done using a UI, CLI, HTTP/ HFDS Proxies, Java interface and you can even mount your HDFS like NFS Gateway. 
+Accessing the HDFS (talking to the Name Node) can be done using a UI, CLI, HTTP/ HFDS Proxies, Java interface and you can even mount your HDFS like NFS Gateway.
+Creating a new dir on a HDFS can be done on a CLI like this: 
+> hadoop fs -mkdir tmp
 
+Most of the Hadoop's file system commands look similar to the Linux commands. In an upcoming adventure I hope to experiment more
+ in a hands on way with the HDFS, so for now I will not explain the different commands and how to create/access a HDFS.
+  
+![alt text](https://github.com/msnm/DiscoveringBigData/raw/master/hadoop/notes/img/architecture_hfds.png "Basic architecture sketch of a HDFS") 
+
+More to come here ...  
+
+## Yarn
+
+Yarn is a distributed OS and its purpose is to allocate resources so that applications can parallelize their tasks on different nodes. 
+The **resource manager** is responsible for allocating the resources demanded by **application managers/masters**. The latter are
+for example Spark or MapReduce jobs that want to execute a job on the cluster. More about Spark later on.  
+
+![alt text](https://github.com/msnm/DiscoveringBigData/raw/master/hadoop/notes/img/yarn.png "Basic architecture sketch of a HDFS") 
+
+In the above figure a client asks to the **resource manager** to start for example a Spark Application (1). 
+A container will be allocated on one of the nodes in the cluster where the **application master** can run in (2). 
+The **application master** will examine the job it wants to execute and decides which tasks of the job can be executed in parallel (3).
+Then this will be communicated back to the **resource manager** who allocates the tasks to nodes. Each task will run in 
+a container (own network, memory, cpu) and communicates with the **application master** (4). Each node has also a **node manager** 
+which checks the status/health of that node and communicates with the **resource manager**. This way the **resource manager** knows which
+nodes are failing, which can run an extra task etc (5). This is in a nutshell how I think Yarn or other distributed OS like Mesos work.  
+ 
+More to come here ...
+
+## Apache Spark
+
+> Currently I'm learning from the following sources to retrieve insights in Apache Spark: 
+>* a gitbook to understand more of [Sparks Internals](https://jaceklaskowski.gitbooks.io/mastering-apache-spark/)
+>* Udemy [course](https://www.udemy.com/apache-spark-with-scala-hands-on-with-big-data)
+>* Clear explanation of [Spark Components](https://www.youtube.com/watch?v=m4pYYnY4_gU&list=PLFxgwFEQig6wWDHq3iMfjm5ZCHs_UdIp7)
+>* Thus more come
+
+According to the official Apache Spark website:
+
+> Apache Spark is a unified analytics engine for large-scale processing
+
+In simple terms if you want to run your code written in Java/Python/Scala to run in distributed way you need to use
+the Spark API. Instead of using your Scala map/reduce/flatMap/groupBy functions you will use the Spark implementations.
+To see my code quests I tried to resolve with Spark go to [this repo](https://github.com/msnm/DiscoveringBigData/tree/master/spark/code/helloworld/src/main/scala/spark/exercises)
 
 
 
