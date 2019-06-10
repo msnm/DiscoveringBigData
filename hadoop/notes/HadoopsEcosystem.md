@@ -95,7 +95,7 @@ Creating a new dir on a HDFS can be done on a CLI like this:
 Most of the Hadoop's file system commands look similar to the Linux commands. In an upcoming adventure I hope to experiment more
  in a hands on way with the HDFS, so for now I will not explain the different commands and how to create/access a HDFS.
   
-![alt text](https://github.com/msnm/DiscoveringBigData/raw/master/hadoop/notes/img/architecture_hfds.png "Basic architecture sketch of a HDFS") 
+![alt text](https://github.com/msnm/DiscoveringBigData/raw/master/hadoop/notes/img/architecture_hdfs.png "Basic architecture sketch of a HDFS") 
 
 More to come here ...  
 
