@@ -134,7 +134,17 @@ In simple terms if you want to run your code written in Java/Python/Scala to run
 the Spark API. Instead of using your Scala map/reduce/flatMap/groupBy functions you will use the Spark implementations.
 To see my code quests I tried to resolve with Spark go to [this repo](https://github.com/msnm/DiscoveringBigData/tree/master/spark/code/helloworld/src/main/scala/spark/exercises)
 
-Before continuing I want to note that I will not explore MapReduce, because I've read that it's  legacy software and should not be used anymore for new projects. Spark is seems much faster according to several articles I have read. The key difference why Spark is faster is that it stores the subresults of its computations in memory where MapReduces stores these on disk which is much slower.
+Before continuing I want to note that I will not explore MapReduce, because I've read that it's  legacy software and should not be used anymore for new projects. Spark seems much faster according to several articles I have read. The key difference why Spark is faster is that it stores the subresults of its computations in memory where MapReduce stores these on disk which is much slower. And also the introduction of DAG gives spark the opportunity to optimize its executionplan.
+
+**RDD** stands for Resilient Distributed Dataset and is an immutuable (virtual) distributed collection of objects. 
+The data stored on HDFS that you will transform with Spark will be loaded as an RDD. This RDD can be seen as a virtual array of your data, which has n partitions where the partitions are divided over the nodes on the cluster. 
+
+
+**Transformations** are functions like map, filter, distinct, groupByKey, ... etc and differ from **Actions** as reduce, collect, count, first, take ... in the sense that transformations describe how the RDD should be altered, whereas actions are like triggers which will execute the previously defined transformations and retrieve the data. 
+
+**DAG** https://data-flair.training/blogs/dag-in-apache-spark/
+
+**Shuffle**
 
 
 
