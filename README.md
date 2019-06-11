@@ -6,6 +6,7 @@ This world is quite new for me, but I'm excited to start exploring it and creati
 ## Content
 ### The HadoopsEcosystem
 The journey starts in the hadoop folder, where I will try to get a grasp on most of the components in the Hadoop's Ecosystem and  what they are useful for. Over time for each component a project folder will pop up in this main directory where the technology will be explored in greater depth.
+[Click here to navigate to my diary of my adventures](https://github.com/msnm/DiscoveringBigData/blob/master/hadoop/notes/HadoopsEcosystem.md)
   
 ### Spark
 The spark folder contains coding adventures in Spark using Scala, and also some notes. 
