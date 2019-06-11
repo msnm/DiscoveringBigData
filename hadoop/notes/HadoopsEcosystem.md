@@ -134,6 +134,8 @@ In simple terms if you want to run your code written in Java/Python/Scala to run
 the Spark API. Instead of using your Scala map/reduce/flatMap/groupBy functions you will use the Spark implementations.
 To see my code quests I tried to resolve with Spark go to [this repo](https://github.com/msnm/DiscoveringBigData/tree/master/spark/code/helloworld/src/main/scala/spark/exercises)
 
+Before continuing I want to note that I will not explore MapReduce, because I've read that it's  legacy software and should not be used anymore for new projects. Spark is seems much faster according to several articles I have read. The key difference why Spark is faster is that it stores the subresults of its computations in memory where MapReduces stores these on disk which is much slower.
+
 
 
 
