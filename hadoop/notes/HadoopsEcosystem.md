@@ -75,8 +75,8 @@ to store your data in blocks in a replicated manner. Each Data Node sends an ack
 Ultimately the client talks to the Name Node again which stores the info of where each data block is stored into the entry 
 created for this file in its ledger. 
 
-HDFS is designed to *write-once and read many times*, meaning that it is not intended for OLTP but rather for OLAP. As we will discover later the applications
-that run on top of HDFS and YARN main purposes are to analyse the data stored on a HFDS and not to alter/update the data. 
+HDFS is designed to *write-once and read many times*, meaning that it is not intended for OLTP but rather for OLAP. As we will discover later the main purpose of the applications
+that run on top of HDFS and YARN is to analyse the data stored on a HFDS and not to alter/update the data. 
 
 So far, our data is stored in a distributed and replicated manner, but what happens if our Name Node crashes? 
 To eliminate this single point of failure several options can be used depending on your business requirements: 
@@ -96,6 +96,15 @@ Most of the Hadoop's file system commands look similar to the Linux commands. In
  in a hands on way with the HDFS, so for now I will not explain the different commands and how to create/access a HDFS.
   
 ![alt text](https://github.com/msnm/DiscoveringBigData/raw/master/hadoop/notes/img/architecture_hdfs.png "Basic architecture sketch of a HDFS") 
+
+I have not explored yet what types of data formats you can store on top of a HDFS. I know that you can just have normal files on it like text and images and process them, but you can also run NoSQL databases on HDFS. The thing is if you want to search specific things within your files you need to do a full table scan. In otherwords scanning every line of your files and if they are several GB big it is a slow operation... If you need low latency and fast random read/write access you can opt for HBASE, Parquet, or Cassandra or ... 
+
+HBASE for example is a columnar DB, where you are not bound to a strict schema. The advantage of columnar DB's is when you need to read millions of lines of data in a table, but only need for example only two columns out of seven columns specified in the table for you query you will store these columns together with a row id and probably a versioning number. This way you can have history. The difference with RDBMS is that instead of reading from left to right row by row it reads only the columns you need and does this from top to bottom. [Simple basic video illustration of the concept.](https://www.youtube.com/watch?v=8KGVFB3kVHQ)
+
+A disadvantage of for example HBASE as that you cannot join tables ... 
+
+
+
 
 More to come here ...  
 
@@ -139,12 +148,18 @@ Before continuing I want to note that I will not explore MapReduce, because I've
 **RDD** stands for Resilient Distributed Dataset and is an immutuable (virtual) distributed collection of objects. 
 The data stored on HDFS that you will transform with Spark will be loaded as an RDD. This RDD can be seen as a virtual array of your data, which has n partitions where the partitions are divided over the nodes on the cluster. 
 
-
 **Transformations** are functions like map, filter, distinct, groupByKey, ... etc and differ from **Actions** as reduce, collect, count, first, take ... in the sense that transformations describe how the RDD should be altered, whereas actions are like triggers which will execute the previously defined transformations and retrieve the data. 
 
 **DAG** https://data-flair.training/blogs/dag-in-apache-spark/
 
 **Shuffle**
+
+**Datasets**
+
+
+**Streaming**
+
+**Structured Streaming*** 
 
 
 
