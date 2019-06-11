@@ -159,7 +159,7 @@ The data stored on HDFS that you will transform with Spark will be loaded as an 
 
 **Streaming**
 
-**Structured Streaming*** 
+**Structured Streaming**
 
 
 

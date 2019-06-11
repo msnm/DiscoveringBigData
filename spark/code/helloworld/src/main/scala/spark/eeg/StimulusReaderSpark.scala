@@ -72,37 +72,36 @@ object StimulusReaderSpark {
   }
 
   // 3. Goals is to create a tuple (word, Array[(contactPoints, Array[measurementsOfContatPoint])
-  def processEEGLinesPerStimuli(eegLines: RDD[String], eegHeader: Map[Int, String]): RDD[(String, String)] = {
+  def processEEGLinesPerStimuli(eegLines: Vector[String], eegHeader: Map[Int, String]): (String, Vector[String]) = {
 
-    // ZipWithIndex => (line1; 0) (lineN; N). We do not need the header thus filter line where index >= 1
-    val eegLinesBody: RDD[String] = eegLines.zipWithIndex().filter(_._2 >= 0).map(_._1)
-    println("eegLinesBody:")
+    //Each first record is the header ex: Stimulus misdraag
+    // Only need to preserve the word "misdraag"
+    val header: String = eegLines.head.split("\t")(1)
+    val eegLinesBody: Vector[String] = eegLines.tail
+    println(s"eegLinesBody of header $header:")
     eegLinesBody.take(20).foreach(println)
 
-    // Split each line in N columns and take the relevant columns 3 -> 17 and giving it an index. 3 -> 17 are the contactPoints of the EEG Headset
-    val columns: RDD[(String, Int)] = eegLinesBody.flatMap( line => line.split("\t").slice(3, 17).zipWithIndex)
+    // Split each line in N columns and take the relevant columns 3 -> 17. 3 -> 17 are the contactPoints of the EEG Headset
+    val columns: Vector[Vector[String]] = eegLinesBody.map( line => line.split("\t").slice(3, 17).toVector).transpose
     println("flattenedColumns:")
-    columns.take(20).foreach(println)
 
-    // We first did: split + slice + zipWithIndex
-    // (header0,0)  (header1,1) (header2,2)    ...
-    // (value1, 0)   (value1, 1) (value1, 2)  ...
-    // (value2, 0)   (value2, 1) (value2, 2)  ...
-    // (valueN, 0)   (valueN, 1) (value?, 2)  ...
+    // We first did: split + slice
+    // (header0)  (header1) (header2)...
+    // (value1)   (value1) (value1)  ...
+    // (value2)   (value2) (value2)  ...
+    // (valueN)   (valueN) (value?)  ...
     //
-    // Then flatten:
-    //  (header0,0)  (value1, 0)   (value2, 0) (value3, 0)  ... (header1,1)  (value1, 1)   (value2, 1) (value3, 1)  ... (header2,2)  (value1, 2)   (value2, 2) (value3, 2)  ...
+    // Transpose
     //
     // Now we want to groupBy second element of the tuple
-    //  (header0,0)  (value1, 0)   (value2, 0) (value3, 0)  ...
-    //  (header1,1)  (value1, 1)   (value2, 1) (value3, 1)  ...
-    //  (header2,2)  (value1, 2)   (value2, 2) (value3, 2)  ...
+    //  (header0)  (value1)   (value2) (value3)  ...
+    //  (header1)  (value1)   (value2) (value3)  ...
+    //  (header2)  (value1)   (value2) (value3)  ...
     // This gives us the transposed version of the initial matrix
 
-    val dataPerContactPoint: RDD[(String, String)] = columns.map(tuple => (eegHeader(tuple._2), tuple._1)).reduceByKey((accum, b) => accum.concat("\t").concat(b))
-    println("dataPerContactPoint")
-    columns.take(28).foreach(println)
+    val convertedTo1dim: Vector[String] = columns.map(_.reduce(_.concat(" ").concat(_))).zipWithIndex.map(tuple => eegHeader(tuple._2).concat(" ").concat(tuple._1))
+    convertedTo1dim.take(20).foreach(println)
 
-    dataPerContactPoint
+    (header, convertedTo1dim)
   }
 }
