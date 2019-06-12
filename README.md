@@ -9,6 +9,7 @@ The journey starts in the hadoop folder, where I will try to get a grasp on most
 [Click here to navigate to my diary of my adventures](https://github.com/msnm/DiscoveringBigData/blob/master/hadoop/notes/HadoopsEcosystem.md)
   
 ### Spark
-The spark folder contains coding adventures in Spark using Scala, and also some notes. 
+The spark folder contains coding adventures in Spark using Scala. 
+[see](https://github.com/msnm/DiscoveringBigData/blob/master/spark/code/helloworld/README.md)
 
 
