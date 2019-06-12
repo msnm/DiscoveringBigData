@@ -21,9 +21,11 @@ Main class is SparkRunner.scala where you can run the following jobs:
 
 ##EEG
 Arguments:
-EEG local[*] src/main/resources/data/EEG/Bart_NounVerb.csv src/main/resources/data/EEG/output/bart
+EEG src/main/resources/data/EEG/Bart_NounVerb.csv src/main/resources/data/EEG/output/bart
 
 "EEG" "s3://kdgbd52/EEG_Data/Bart_NounVerb.csv" "s3://kdgbd52/output/bart/run[TIMESTAMP]/Bart_NounVerb.csv"
 
+
+spark-submit --class spark.SparkRunner --master local[*] project_2.12-0.1.jar EEG  Bart_NounVerb.csv /output/bart
 
 
